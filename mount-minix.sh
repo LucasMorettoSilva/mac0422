@@ -1,13 +1,22 @@
 #!/bin/bash
 
-# Tenha certeza que voce tem o qemu (qemu-nbd, mais espeficicamente) instalado e funcionando
-# IMPORTANTE: Esse método não se dá muito bem com snapshots. Crie uma nova máquina virtual sem nenhum snapshot se precisar.
-# IMPORTANTE2: Sempre desmonte a partição antes de iniciar a máquina virtual, e desligue-a através do comando shutdown para evitar corrupção de arquivos. Faça backups da imagem manualmente e use git, porque se o minix travar ou vc esquecer de desmontar VAI CORROMPER TUDO
+# Tenha certeza que voce tem o qemu-nbd instalado e funcionando.
+
+# IMPORTANTE: Esse método não se dá muito bem com snapshots. 
+# Crie uma nova máquina virtual sem nenhum snapshot se precisar.
+
+# IMPORTANTE 2: Sempre desmonte a partição antes de iniciar a VM 
+# e desligue-a através do comando shutdown no Virtual Box para
+# evitar corrupção de arquivos. 
+
+# Faça cópias/backups da imagem (.ova) e use git. Caso você inicie 
+# a VM sem antes desmontar a partição, então a imagem será corrompida.
 
 # Como usar: 
-#     - Defina aonde o script vai montar a pasta abaixo
-#     - Execute "mount_minix.sh" modprobe para ativar o módulo do kernel com as configurações corretas
-#     - Use "mount_minix.sh m" para montar e "mount_minix.sh u" para desmontar
+#     - Defina o local onde o script vai montar a partição da imagem (.ova)
+#     - Execute "mount_minix.sh modprobe" para ativar o módulo do kernel com as configurações corretas
+#     - Use "mount_minix.sh m" para montar (transformar a imagem .ova numa partição da sua máquina)
+#     - Use "mount_minix.sh u" para desmontar (converter a partição para imagem .ova)
 
 minix_vdi="/home/lucas/VirtualBox VMs/Minix3/Minix3.vdi"
 mountpoint="/mnt/minix"
