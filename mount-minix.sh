@@ -18,8 +18,8 @@
 #     - Use "mount_minix.sh m" para montar (transformar a imagem .ova numa partição da sua máquina)
 #     - Use "mount_minix.sh u" para desmontar (converter a partição para imagem .ova)
 
-minix_vdi="/home/lucas/VirtualBox VMs/Minix3/Minix3.vdi"
-mountpoint="/mnt/minix"
+minix_vdi="/home/lucas/VirtualBox VMs/Minix Joao/minix-disk001.vdi"
+mountpoint="/home/lucas/Documentos/mnt"
 
 if [ "$EUID" -ne 0 ]
   then sudo $0 $1
