@@ -20,6 +20,29 @@ filho (PID passado como parametro) para `priority`. A chamada retorna
 um processo filho e -2 se `priority` não for um valor permitido pelo
 sistema.
 
+Foi criado um simples programa em C para testar a nova chamada de sistema.
+O arquivo de código fonte é `/usr/local/src/teste.c`. Seu executável é
+`/usr/local/bin/teste-priority`. Para rodar basta acessar `/usr/local/bin/` e
+rodar:
+
+```shell
+./teste-priority
+```
+
+Todos os arquivos alterados possuem sessões de comentário do tipo abaixo,
+nos locais onde o código foi incluído ou alterado:
+
+```
+/* ################################################# */
+/* ##################codigo alterado################ */
+/* #############Lucas Moretto da Silva############## */
+
+... <bloco de código alterado>
+
+/* ################################################# */
+
+```
+
 Abaixo segue a lista dos arquivos alterados ou criados e qual papel eles
 desempenham na implementação:
 
