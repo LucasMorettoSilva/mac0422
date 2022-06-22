@@ -1,6 +1,7 @@
 #define _MINIX 1
 #define _POSIX_SOURCE 1
 
+#include <math.h>
 #include <stdio.h>
 #include <pwd.h>
 #include <curses.h>
@@ -33,38 +34,114 @@
 #include "/usr/src/kernel/const.h"
 #include "/usr/src/kernel/proc.h"
 
-/*Codigo adaptado do top.c, responsável por imprimir a memoria disponivel no sistema */
-int print_memory(struct pm_mem_info *pmi)
-{
-        int h;
-        int total_bytes = 0; 
-        for(h = 0; h < _NR_HOLES; h++) {
-                if(pmi->pmi_holes[h].h_base && pmi->pmi_holes[h].h_len) {
-                        int bytes;
-                        bytes = pmi->pmi_holes[h].h_len << CLICK_SHIFT;
-                        total_bytes += bytes;
-                }
-        }
+int cmpfunc (const void * a, const void * b) {
+   return ( *(int*)a - *(int*)b );
+}
 
-    printf("Memoria livre: %dK \n", total_bytes/1024);
+typedef struct {
+  int *array;
+  size_t used;
+  size_t size;
+} Array;
+
+void initArray(Array *a, size_t initialSize) {
+  a->array = malloc(initialSize * sizeof(int));
+  a->used = 0;
+  a->size = initialSize;
+}
+
+void insertArray(Array *a, int element) {
+  if (a->used == a->size) {
+    a->size *= 2;
+    a->array = realloc(a->array, a->size * sizeof(int));
+  }
+  a->array[a->used++] = element;
+}
+
+void freeArray(Array *a) {
+  free(a->array);
+  a->array = NULL;
+  a->used = a->size = 0;
+}
+
+void printArray(Array *a) {
+    int i = 0;
+    printf("[");
+    for (i = 0; i < a->used; ++i) {
+        printf("%d,", a->array[i]);
+    }
+    printf("]\n");
+}
+
+float meanArray(Array *a) {
+    float arrayMean = 0.0;
+    int i = 0;
+    
+    for (i = 0; i < a->used; ++i) {
+        arrayMean += a->array[i];
+    }
+    
+    return arrayMean / a->used;
+}
+
+float stdevArray(Array *a) {
+    float arrayStdev = 0.0;
+    int i = 0;
+
+    float arrayMean = meanArray(a);
+
+    for (i = 0; i < a->used; ++i) {
+        arrayStdev += pow(a->array[i] - arrayMean, 2);
+    }
+
+    return sqrt(arrayStdev / a->used);
+}
+
+int medianArray(Array *a) {
+    qsort(a->array, a->used, sizeof(int), cmpfunc);
+    return a->array[a->used / 2];
+}
+
+int print_memory(struct pm_mem_info *pmi) {
+    Array holes;
+
+    float media, desvio;
+
+    int h, mediana;
+
+    initArray(&holes, _NR_HOLES);
+    
+    for(h = 0; h < _NR_HOLES; h++) {
+            if(pmi->pmi_holes[h].h_base && pmi->pmi_holes[h].h_len) {
+                    int bytes;
+                    bytes = pmi->pmi_holes[h].h_len << CLICK_SHIFT;
+                    insertArray(&holes, bytes / 1024);
+            }
+    }
+
+    media = meanArray(&holes);
+    desvio = stdevArray(&holes);
+    mediana = medianArray(&holes);
+
+    printf("%d\t%.2f\t%.2f\t%d\n", holes.used, media, desvio, mediana);
+
+    freeArray(&holes);
 
     return 1;
 }
-void print_table(struct mproc mp[]){
-    int i;
-    struct mproc *mp_atual;
-    for(i=0; i < NR_PROCS; i++){
-        mp_atual = &mp[i];
-        printf("pid: %d\t", mp_atual[i].mp_pid);
-        printf("primeira posicao: %d\t", mp_atual[i].mp_seg[T].mem_phys);
-        printf("ultima posicao: %d\n", mp_atual[i].mp_seg[S].mem_phys + mp_atual[i].mp_seg[S].mem_len);
-    }
-}
-int main(int argc, char *argv[]){
+
+int main(int argc, char *argv[]) {
     static struct pm_mem_info pmi;
-    static struct mproc mp[NR_PROCS];
-    getsysinfo(PM_PROC_NR, SI_PROC_TAB, mp);
-    getsysinfo(PM_PROC_NR, SI_MEM_ALLOC, &pmi);
-    print_table(mp);
-    print_memory(&pmi);
+
+    printf("qtd. buracos\tmedia (KB)\tdesvio padrao (KB)\tmediana (KB)\n");
+
+    while (1) {
+        if (getsysinfo(PM_PROC_NR, SI_MEM_ALLOC, &pmi) != OK) {
+            printf("Falha ao obter a lista de buracos.\n");
+            exit(EXIT_FAILURE);
+        }
+
+        print_memory(&pmi);
+        sleep(1);
+    }
 }
