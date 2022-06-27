@@ -84,14 +84,15 @@ Caso negativo, tenta-se realizar o _swap_ algum processo da memória para criar 
 
 ## 2.3 Random fit
 
-Para realizar o _random-fit_ foi criada uma estrutura de dados Array que é um array dinâmico.
-Ela é utilizada para armazenar todos os buracos que poderiam alocar o processo.
+Para realizar o _random-fit_ primeiramente percorremos a lista de buracos e contamos a quantidade
+de buracos disponíveis que poderiam alocar o processo. Essa quantidade é armazenada em `randHolesAvail`.
 
-O procedimento tomado para aplicar a politica de _random-fit_ consiste em percorrer toda a lista
-de _holes_ em busca de todos os buracos que se adequam ao _h_len_ (tamanho) do processo.
-Os buracos encontrados são armazenados no array `randHoles`.
+Com tal quantidade em mãos, escolhe-se um número randomicamente entre 0 e randHolesAvail. Ele indicará
+qual dos buracos nós utilizaremos para o processo. Esse número é armazenado em `randPos`.
 
-Após encontrar-se todos os buracos, escolhe-se um deles randomicamente para alocar o processo.
+Com `randPos` em maõs, percorre-se a lista de buracos novamente, atualizando um contador `randHolesCount`.
+Quando `randHolesCount` for igual a `randPos`, então encontramos o buraco sorteado e o utilizamos para
+alocar o processo.
 
 # 3 Utilitário memstat
 

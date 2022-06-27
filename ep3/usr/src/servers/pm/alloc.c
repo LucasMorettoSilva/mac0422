@@ -107,7 +107,7 @@ phys_clicks clicks;   /* amount of memory requested */
   register struct hole *hp, *prev_ptr, *biggest_h, *biggest_prev, *best_hp, *prev_best;
   phys_clicks old_base;
   Array randHoles;
-  int randPos;
+  int randPos, randHolesAvail = 0, randHolesCount = -1;
 
   if (alloc_mode == FIRST_FIT) {
     do {
@@ -244,42 +244,51 @@ phys_clicks clicks;   /* amount of memory requested */
   /* random fit */ 
   else {
     do {
-      /* vamos armazenar todos os buracos com tamanho necessario em um array */
-      /* depois vamos escolher um deles randomicamente */
-      freeArray(&randHoles);
-      initArray(&randHoles, _NR_HOLES);
-
       prev_ptr = NIL_HOLE;
       hp = hole_head;
       while (hp != NIL_HOLE && hp->h_base < swap_base) {
         if (hp->h_len >= clicks) {
-          printf("inserting rand holes");
-          
-          insertArray(&randHoles, hp);
+          ++randHolesAvail;
         }
         prev_ptr = hp;
         hp = hp->h_next;
       }
 
-      printf("qtd randHoles = %d", randHoles.used);
+      if (randHolesAvail > 0) {
+        /* escolhemos um dos buracos ao acaso */
+        randPos = rand() % randHolesAvail;
 
-      if (randHoles.used > 0) {
-        randPos = rand() % randHoles.used;
+        prev_ptr = NIL_HOLE;
+        hp = hole_head;
 
-        printf("randPos = %d", randPos);
+        /* percorremos os buracos novamente */
+        /* até chegar ao buraco da posicao sorteada randPos */
 
-        hp = randHoles.array[randPos];
+        while (hp != NIL_HOLE && hp->h_base < swap_base) {
+          if (hp->h_len >= clicks) {
+            ++randHolesCount;
 
-        old_base = hp->h_base;  /* remember where it started */
-        hp->h_base += clicks; /* bite a piece off */
-        hp->h_len -= clicks;  /* ditto */
-              /* Remember new high watermark of used memory. */
-        if(hp->h_base > high_watermark)
-          high_watermark = hp->h_base;
-              /* Delete the hole if used up completely. */
-        if (hp->h_len == 0) del_slot(prev_ptr, hp);
-              /* Return the start address of the acquired block. */
-        return(old_base);
+            /* encontramos a posicao sorteada */
+            if (randHolesCount == randPos) {
+              /* We found a hole that is big enough.  Use it. */
+              old_base = hp->h_base;  /* remember where it started */
+              hp->h_base += clicks; /* bite a piece off */
+              hp->h_len -= clicks;  /* ditto */
+                    /* Remember new high watermark of used memory. */
+              if(hp->h_base > high_watermark)
+                high_watermark = hp->h_base;
+                    /* Delete the hole if used up completely. */
+              if (hp->h_len == 0) del_slot(prev_ptr, hp);
+                    /* Return the start address of the acquired block. */
+
+              next_fit_head = hp->h_next;
+
+              return(old_base);
+            }
+          }
+          prev_ptr = hp;
+          hp = hp->h_next;
+        }
       }
     } while (swap_out());   /* try to swap some other process out */
   }
