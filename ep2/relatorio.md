@@ -13,8 +13,8 @@ favor logar com usuário root (não precisa de senha) e bootar em d0p0 (boot d0p
 
 ## Implementação
 
-Esse trabalho implementa a chamada de sistema
-`lockpriority(pid, priority)` e `unlockpriority(pid)`, que altera a prioridade de um processo
+Esse trabalho implementa as chamadas de sistema
+`lockpriority(pid, priority)` e `unlockpriority(pid)`, que alteram a prioridade de um processo
 filho (PID passado como parametro) para `priority`. 
 
 A chamada `lockpriority` retorna
@@ -22,14 +22,33 @@ A chamada `lockpriority` retorna
 um processo filho e -2 se `priority` não for um valor permitido pelo
 sistema.
 
+## Arquivos de teste
+
 Foi criado um simples programa em C para testar a nova chamada de sistema.
-O arquivo de código fonte é `/usr/local/src/teste.c`. Seu executável é
+O arquivo de código fonte é `/usr/local/src/teste-priority.c`. Seu executável é
 `/usr/local/bin/teste-priority`. Para rodar basta acessar `/usr/local/bin/` e
 rodar:
 
 ```shell
 ./teste-priority
 ```
+
+## Arquivos de teste do E-Disciplinas
+
+Os arquivos de teste disponilizados no E-Disciplinas foram adicionados na
+VDI.
+
+Os arquivos de código fonte podem sem enconrados em:
+
+- `/usr/local/src/cpubound.c`
+- `/usr/local/src/teste.c`
+
+Os binários gerados pela compilação podem ser encontrados em:
+
+- `/usr/local/bin/cpubound`
+- `/usr/local/bin/teste`
+
+## Implementação das funções do EP
 
 Todos os arquivos alterados possuem sessões de comentário do tipo abaixo,
 nos locais onde o código foi incluído ou alterado:
@@ -52,7 +71,7 @@ desempenham na implementação:
 
     -   Arquivos: `proto.h, table.c, lockpriority.c, Makefile`
 
-    -   Função: Implementa as chamadas de sistema no nível do *Process
+    -   Função: Implementa as chamadas de sistema (unlockpriority, lockpriority) no nível do *Process
         Manager* (PM) e manda a chamada pro *kernel* alterar a
         prioridade do processo.
 
