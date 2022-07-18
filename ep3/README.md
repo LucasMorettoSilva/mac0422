@@ -94,11 +94,19 @@ Com `randPos` em maõs, percorre-se a lista de buracos novamente, atualizando um
 Quando `randHolesCount` for igual a `randPos`, então encontramos o buraco sorteado e o utilizamos para
 alocar o processo.
 
+## 2.4 Next fit
+
+Para realizar o `next-fit` realizamos a mesma lógica do `first-fit`, com a diferença de
+que sempre mantemos as posições dos últimos buracos utilizados nas variáveis
+`next_fit_head` e `next_fit_prev_ptr`. Assim, sempre que o algoritmo de alo-
+cação é executado, tentamos começar o loop de verificação de buracos por meio
+desses ponteiros.
+
 # 3 Utilitário memstat
 
 Para a implementação do utilitário, me inspirei no `top.c`. Assim como no programa `top`:
 
-- Utiliza-se a _sycall_ `getsysinfo` para conseguir as informações dos buracos (holes)
+- Utiliza-se a _syscall_ `getsysinfo` para conseguir as informações dos buracos (holes)
 da memoria. Ainda utilizamos uma verificação de erro ao obter as sysinfos do `SI_MEM_ALLOC` (para acessar a struct `pm_mem_info`, que possui informações sobre os buracos da memória);
 - Imprimi-se o espaço disponível na memória, faz-se isso como o `top.c` faz, percorrendo os buracos
 nos utilizando da struct `pm_mem_info`, obtendo a base do vetor de buracos e o comprimento do mesmo.
@@ -119,7 +127,7 @@ cd /root
 
 Foi criado um programa de usuário chamado `change_allocation_policy` para trocar o
 algoritmo de escalonamento a partir da shell. O primeiro argumento, passado
-para o argv do programa, é uma das strings first_fit, worst_fit, best_fit ou
+para o argv do programa, é uma das strings first_fit, worst_fit, best_fit, next_fit ou
 random_fit. Esse programa utiliza a syscall `memalloc` definida anteriormente.
 
 O programa `change_allocation_policy` tem seu código fonte em `/usr/local/src/change_allocation_policy.c`.
@@ -129,3 +137,20 @@ Também temos o executável `/root/change_allocation_policy` e pode ser executad
 cd /root
 ./change_allocation_policy first_fit
 ```
+
+# 5 Arquivos de teste do E-Disciplinas
+
+Os arquivos de teste auxiliares fornecidos no E-Disciplinas (forkmem.c, usemem.c, mkmemuse)
+foram adicionados a VDI.
+
+Os arquivos com código do fonte C estão em:
+
+- `/usr/local/src/forkmem.c`
+- `/usr/local/src/usemem.c`
+- `/usr/local/src/mkmemuse`
+
+Os arquivos com o binário gerado pela compilação estão em:
+
+- `/root/forkmem`
+- `/root/usemem`
+- `/root/mkmemuse`
