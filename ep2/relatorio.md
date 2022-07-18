@@ -14,8 +14,10 @@ favor logar com usuário root (não precisa de senha) e bootar em d0p0 (boot d0p
 ## Implementação
 
 Esse trabalho implementa a chamada de sistema
-`lockpriority(pid, priority)`, que altera a prioridade de um processo
-filho (PID passado como parametro) para `priority`. A chamada retorna
+`lockpriority(pid, priority)` e `unlockpriority(pid)`, que altera a prioridade de um processo
+filho (PID passado como parametro) para `priority`. 
+
+A chamada `lockpriority` retorna
 `priority` se a alteração foi feita com sucesso, -1 se `pid` não for de
 um processo filho e -2 se `priority` não for um valor permitido pelo
 sistema.
@@ -50,7 +52,7 @@ desempenham na implementação:
 
     -   Arquivos: `proto.h, table.c, lockpriority.c, Makefile`
 
-    -   Função: Implementa a chamada de sistema no nível do *Process
+    -   Função: Implementa as chamadas de sistema no nível do *Process
         Manager* (PM) e manda a chamada pro *kernel* alterar a
         prioridade do processo.
 
@@ -66,7 +68,7 @@ desempenham na implementação:
 
     -   Arquivos: `_lockpriority.c, Makefile.in`
 
-    -   Função: Implementa a função de nível de usuário, que faz a
+    -   Função: Implementa as funções lockpriority e unlockpriority de nível de usuário, que faz a
         chamada para o PM.
 
 ### Diretório: `/usr/src/lib/syslib/`
@@ -80,7 +82,7 @@ desempenham na implementação:
 
     -   Arquivos: `unistd.h, minix/callnr.h, minix/com.h`
 
-    -   Função: Define os macros `LOCKPRIORITY` e `SYS_LOCKPRIORITY`
+    -   Função: Define os macros `LOCKPRIORITY`, `UNLOCKPRIORITY` e `SYS_LOCKPRIORITY`
         para os números da chamada de sistema no nível do PM e do
         *kernel*, respectivamente e também o protótipo de `lockpriority`
         para o usuário.
